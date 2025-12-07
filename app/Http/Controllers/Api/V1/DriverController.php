@@ -1766,7 +1766,7 @@ class DriverController extends Controller
                 $inventorytransaction->user = $driver->employeeid . " (".$driver->name.")";
                 $inventorytransaction->date = date('Y-m-d H:i:s');
                 $inventorytransaction->save();
-            }
+            } 
             if($data['type'] != 2){
                 $invoicepayment = New InvoicePayment();
                 $invoicepayment->invoice_id = $invoice->id;

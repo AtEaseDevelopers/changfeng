@@ -19,22 +19,6 @@ class LorryDataTable extends DataTable
     {
         $dataTable = new EloquentDataTable($query);
 
-        $dataTable->filterColumn('status', function ($query, $keyword) {
-            $normalized = strtolower(trim($keyword));
-            if ($normalized === '') {
-                return;
-            }
-            if (in_array($normalized, ['1', 'active'], true)) {
-                $query->where('lorrys.status', 1);
-                return;
-            }
-            if (in_array($normalized, ['0', 'unactive', 'inactive'], true)) {
-                $query->where('lorrys.status', 0);
-                return;
-            }
-            $query->where('lorrys.status', 'like', "%{$keyword}%");
-        });
-
         return $dataTable->addColumn('action', 'lorries.datatables_actions');
     }
 
