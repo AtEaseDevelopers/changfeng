@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
+        Schema::table('invoices', function (Blueprint $table) {
             $table->string('sql_sync_status')->nullable()->after('status')->index();
             $table->text('sql_sync_respond')->nullable()->after('sql_sync_status');
         });
@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
+        Schema::table('invoices', function (Blueprint $table) {
             $table->dropIndex(['sql_sync_status']);
             $table->dropColumn(['sql_sync_status', 'sql_sync_respond']);
         });
