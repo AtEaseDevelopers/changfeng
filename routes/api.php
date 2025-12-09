@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SqlSyncRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,4 +81,9 @@ Route::group(['prefix' => 'v1'], function () {
 Route::fallback(function(){
     return response()->json([
         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
+});
+
+Route::middleware('verify.signature')->group(function () {
+    Route::post('/sql-sync-records', [SqlSyncRecordController::class, 'store']);
+    Route::get('/sql-sync-records', [SqlSyncRecordController::class, 'index']);
 });

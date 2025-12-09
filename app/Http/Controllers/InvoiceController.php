@@ -12,6 +12,7 @@ use App\Http\Controllers\AppBaseController;
 use Response;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Invoice;
+use App\Models\SqlSyncRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -760,5 +761,173 @@ class InvoiceController extends AppBaseController
             Flash::error('Something went wrong. Please contact administator.');
             return redirect(route('invoices.index'));
         }
+    }
+
+    // public function sync_delivery_order(Request $request)
+    // {
+    //     $request->validate([
+    //         'orders_id' => 'required|string',
+    //     ]);
+
+    //     $orderIds = array_filter(explode(',', $request->input('orders_id')));
+    //     $orders = Order::getOrdersWithUser($orderIds);
+    //     $cartIds = $orders->pluck('cart_id')->filter()->unique()->all();
+
+    //     $cartItemsMap = Order::getCartItemsForOrders($cartIds);
+
+    //     $allOrders = $orders
+    //         ->map(function ($order) use ($cartItemsMap) {
+    //             return [
+    //                 'id' => $order->id,
+    //                 'do_no' => $order->do_no,
+    //                 'do_date' => $order->do_date,
+    //                 'attn_name' => $order->attn_name,
+    //                 'attn_contact' => $order->attn_contact,
+    //                 'billing_address' => $order->billing_address,
+    //                 'payment_method' => $order->payment_method,
+    //                 'sql_sync_status' => $order->sql_sync_status,
+    //                 'sql_sync_message' => $order->sql_sync_message,
+    //                 'user_name' => $order->user_name,
+    //                 'user_email' => $order->user_email,
+    //                 'sql_customer_code' => $order->sql_customer_code,
+    //                 'status' => $order->status,
+    //                 'cart_id' => $order->cart_id,
+    //                 'items' => $cartItemsMap[$order->cart_id] ?? [],
+    //             ];
+    //         })->keyBy('id'); // This sets 'id' as the key for $allOrders
+
+
+    //     $validOrders = [];
+    //     $invalidOrders = [];
+    //     $notFoundOrders = [];
+
+    //     foreach ($orderIds as $id) {
+    //         if (!isset($allOrders[$id])) {
+    //             $notFoundOrders[] = "Order ID $id not found.";
+    //             continue;
+    //         }
+
+    //         $order = $allOrders[$id];
+
+    //         $errors = [];
+
+    //        if ($order['status'] !== 'processing') {
+    //             $errors[] = "Status is '{$order['status']}'";
+    //         }
+
+    //         if (empty($order['do_no'])) {
+    //             $errors[] = "DO number is empty";
+    //         }
+
+    //         if ($order['sql_sync_status'] === 'success') {
+    //             $errors[] = "Already synced";
+    //         }
+
+    //         if (!empty($errors)) {
+    //             $invalidOrders[$id] = implode(', ', $errors);
+    //         } else {
+    //             $validOrders[$id] = $order;
+    //         }
+    //     }
+
+    //     $syncedOrders = [];
+    //     $syncFailures = [];
+
+    //     if (!empty($validOrders)) {
+    //         $syncResult = app(DeliveryOrderSyncService::class)->sync(collect($validOrders));
+
+    //         foreach ($syncResult as $id => $result) {
+    //             if ($result['status'] === 'success') {
+    //                 $syncedOrders[$id] = $result['message'];
+    //             } else {
+    //                 $syncFailures[$id] = $result['message'];
+    //             }
+    //         }
+    //     }
+
+    //     return redirect()->back()->with([
+    //         'success_count' => count($syncedOrders),
+    //         'fail_count' => count($invalidOrders) + count($syncFailures),
+    //         'synced_orders' => $syncedOrders,
+    //         'invalid_orders' => $invalidOrders,
+    //         'sync_failures' => $syncFailures,
+    //         'not_found' => $notFoundOrders,
+    //     ]);
+    // }
+
+    public function sync_invoice(Request $request)
+    {
+        $request->validate([
+            'invoices_id' => 'required|string',
+        ]);
+
+        $invoiceIds = array_filter(explode(',', $request->input('invoices_id')));
+        $allInvoices = Invoice::prepareSyncInvoices($invoiceIds);
+        $validInvoices = [];
+        $invalidInvoices = [];
+        $notFoundInvoices = [];
+        foreach ($invoiceIds as $id) {
+            if (!isset($allInvoices[$id])) {
+                $notFoundInvoices[] = "Invoice ID $id not found.";
+                continue;
+            }
+
+            $invoice = $allInvoices[$id];
+
+            $errors = [];
+
+           if ($invoice['status'] !== 'processing') {
+                $errors[] = "Status is '{$invoice['status']}'";
+            }
+
+            if (empty($invoice['do_no'])) {
+                $errors[] = "DO number is empty";
+            }
+
+            if ($invoice['sql_sync_status'] === 'success') {
+                $errors[] = "Already synced";
+            }
+
+            if (!empty($errors)) {
+                $invalidInvoices[$id] = implode(', ', $errors);
+            } else {
+                $validInvoices[$id] = $invoice;
+            }
+        }
+
+        $syncedInvoices = [];
+        $syncFailures = [];
+
+        if (!empty($validInvoices)) {
+            foreach ($validInvoices as $id => $invoice) {
+                try {
+                    // 🆕 Save sync queue record
+                    SqlSyncRecord::queue([
+                        'target_id'   => $invoice['id'],
+                        'action'      => 'invoice',
+                        'target_name' => $invoice['invoiceno'],
+                        'details'     => $invoice,
+                    ]);
+                    DB::table('invoices')->where('id', $invoice['id'])->update([
+                        'sql_sync_status'  => 'PENDING',
+                        'updated_at'       => now(),
+                    ]);
+
+                    $syncedInvoices[$id] = "Sync job queued";
+
+                } catch (\Exception $ex) {
+                    $syncFailures[$id] = $ex->getMessage();
+                }
+            }
+        }
+
+        return redirect()->back()->with([
+            'success_count' => count($syncedInvoices),
+            'fail_count' => count($invalidInvoices) + count($syncFailures),
+            'synced_invoices' => $syncedInvoices,
+            'invalid_invoices' => $invalidInvoices,
+            'sync_failures' => $syncFailures,
+            'not_found' => $notFoundInvoices,
+        ]);
     }
 }

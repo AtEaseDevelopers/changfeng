@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
-use App\SqlSyncRecord;
+use App\Models\SqlSyncRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Order;
+use App\Models\Invoice;
 class SqlSyncRecordController extends Controller
 {
     public function store(Request $request)
@@ -53,10 +53,10 @@ class SqlSyncRecordController extends Controller
         if ($isSuccess) {
             $update['status'] = 'completed';
             $update['sql_sync_status'] = 'SUCCESS';
-            $update['do_no']  = $data['target_name'] ?? null;
+            $update['invoiceno']  = $data['target_name'] ?? null;
         }
 
-        DB::table('orders')
+        DB::table('invoices')
             ->where('id', $data['target_id'])
             ->update($update);
 
@@ -87,7 +87,7 @@ class SqlSyncRecordController extends Controller
         $orderIds = $records->pluck('target_id')->filter()->unique()->values()->toArray();
 
         // Prepare actual order data using your helper
-        $ordersData = Order::prepareSyncOrders($orderIds);
+        $ordersData = Invoice::prepareSyncInvoices($orderIds);
 
         // Combine the two datasets into a single API response
         $responseData = $records->map(function ($record) use ($ordersData) {
