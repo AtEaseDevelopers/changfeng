@@ -17,11 +17,13 @@
                              <a class="pull-right text-danger pr-2" id="massdelete" href="#" alt="Mass delete"><i class="fa fa-trash fa-lg"></i></a>
                              <a class="pull-right text-success pr-2" id="massactive" href="#" alt="Mass active"><i class="fa fa-check fa-lg"></i></a>
                              <!--<a class="pull-right pr-2" id="masssyncxero" href="#" alt="Mass Sync to Xero"><i class="fa fa-refresh fa-lg"></i></a>-->
+                             <a class="pull-right text-primary pr-2" id="masssyncsql" href="#" alt="Mass Sync to SQL" data-toggle="tooltip" title="Sync to SQL">
+                                <img src="{{ asset('images/icon/sql_icon.webp') }}" alt="SQL Sync" width="25" />
+                             </a>
                          </div>
                          <div class="card-body">
                              @include('invoices.table')
-                              <div class="pull-right mr-3">
-                                     
+                               <div class="pull-right mr-3">                               
                               </div>
                          </div>
                      </div>
@@ -33,6 +35,13 @@
 
 @push('scripts')
     <script>
+        $(document).ready(function () {
+            // Tooltip without delay
+            $('[data-toggle="tooltip"]').tooltip({
+                delay: { "show": 0, "hide": 0 }
+            });
+        });
+
         $(document).keyup(function(e) {
             if(e.altKey && e.keyCode == 78){
                 $('.card .card-header a')[0].click();
@@ -61,7 +70,7 @@
                     }
                 }
             });
-            
+
         });
 
         $(document).on("click", "#masssyncxero", function(e){
@@ -83,6 +92,49 @@
                         url = `${url}?ids=${window.checkboxid}`
 
                         window.location.href = url
+                    },
+                    No: function() {
+                        return;
+                    }
+                }
+            });
+        });
+        $(document).on("click", "#masssyncsql", function(e){
+            var m = "";
+            if(window.checkboxid.length == 0){
+                noti('i','Info','Please select at least one row');
+                return;
+            } else if(window.checkboxid.length == 1){
+                m = "Confirm to sync 1 row!";
+            } else {
+                m = "Confirm to sync " + window.checkboxid.length + " rows!";
+            }
+
+            $.confirm({
+                title: 'Mass Sync SQL',
+                content: m,
+                buttons: {
+                    Yes: function() {
+                        // Prepare POST data
+                        var data = {
+                            invoices_id: window.checkboxid.join(','),
+                            _token: "{{ csrf_token() }}"  // CSRF token for security
+                        };
+
+                        // Send AJAX POST request
+                        $.ajax({
+                            url: "{{ route('invoices.syncsqlrecord') }}",  // Adjust the URL to your route
+                            type: "POST",
+                            data: data,
+                            success: function(response) {
+                                // Redirect or show success message
+                                toastr.success('Sync started successfully!', 'Success');
+                            },
+                            error: function(error) {
+                                // Handle error
+                                toastr.error('Failed to start sync. Please try again.', 'Error');
+                            }
+                        });
                     },
                     No: function() {
                         return;
