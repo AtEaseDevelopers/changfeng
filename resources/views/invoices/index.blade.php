@@ -127,8 +127,42 @@
                             type: "POST",
                             data: data,
                             success: function(response) {
-                                // Redirect or show success message
                                 toastr.success('Sync started successfully!', 'Success');
+
+                                var message = 'Sync Summary:<br>';
+                                message += 'Success: ' + response.success_count + ' invoices<br>';
+                                message += 'Failed: ' + response.fail_count + ' invoices<br>';
+                                message += 'System will sync in background, please check the sync status later.<br><br>';
+
+                                if (response.synced_invoices.length > 0) {
+                                    message += 'Synced Invoices: <br>' + response.synced_invoices.join('<br>') + '<br>';
+                                }
+
+                                if (response.invalid_invoices.length > 0) {
+                                    message += 'Invalid Invoices: <br>' + Object.entries(response.invalid_invoices).map(function([id, error]) {
+                                        return 'Invoice ID ' + id + ': ' + error;
+                                    }).join('<br>') + '<br>';
+                                }
+
+                                if (response.sync_failures.length > 0) {
+                                    message += 'Sync Failures: <br>' + Object.entries(response.sync_failures).map(function([id, error]) {
+                                        return 'Invoice ID ' + id + ': ' + error;
+                                    }).join('<br>') + '<br>';
+                                }
+
+                                if (response.not_found.length > 0) {
+                                    message += 'Not Found Invoices: <br>' + response.not_found.join('<br>') + '<br>';
+                                }
+
+                                $.confirm({
+                                    title: 'Sync Results',
+                                    content: message,
+                                    buttons: {
+                                        Ok: function() {
+                                            location.reload(); // This will reload the entire page
+                                        }
+                                    }
+                                });
                             },
                             error: function(error) {
                                 // Handle error

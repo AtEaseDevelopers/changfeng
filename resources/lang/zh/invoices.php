@@ -34,6 +34,8 @@ return [
     'kelindan' => 'Kelindan',
     'no_payment_proof_available' => '没有付款收据',
     'payment_term' => '付款条款',
+    'sql_sync_status' => 'SQL同步状态',
+    'sql_sync_respond' => 'SQL同步响应',
     'price' => '价格',
     'product' => '产品',
     'proof_of_payment' => '付款收据',

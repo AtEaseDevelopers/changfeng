@@ -147,7 +147,7 @@ class Invoice extends Model
                 'invoice_details.totalprice as amount',
                 'invoice_details.remark',
                 'products.name as product_name',
-                'products.sku as product_sku',
+                //'products.sku as product_sku',
                 'products.code as product_code'
                 //'uoms.uom_name as uom_name'
             )
@@ -165,19 +165,19 @@ class Invoice extends Model
         return $invoices->map(function ($inv) use ($detailsMap) {
             return [
                 'id'                => $inv->id,
-                'do_no'             => $inv->invoice_no,
+                'do_no'             => $inv->invoiceno,
                 'do_date'           => $inv->date,
                 'attn_name'         => $inv->customer_name,
                 'attn_contact'      => $inv->customer_phone,
                 'billing_address'   => $inv->billing_address,
-                //'payment_method'    => $inv->payment_method,
+                'payment_method'    => '',//$inv->payment_method,
                 'sql_sync_status'   => $inv->sql_sync_status,
                 'sql_sync_respond'  => $inv->sql_sync_respond,
-                // 'user_name'         => $inv->user_name,
-                // 'user_email'        => $inv->user_email,
+                'user_name'         => '',//$inv->user_name,
+                'user_email'        => '',//$inv->user_email,
                 'sql_customer_code' => $inv->sql_customer_code,
                 'status'            => $inv->status,
-                'cart_id'           => $inv->cart_id,
+                'cart_id'           => '',//$inv->cart_id,
                 'items'             => $detailsMap[$inv->id] ?? [],
             ];
         })->keyBy('id');

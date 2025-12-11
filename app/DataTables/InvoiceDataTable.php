@@ -151,6 +151,24 @@ class InvoiceDataTable extends DataTable
                         
                     }'
                     ],
+                   [
+                    'targets' => 12,
+                    'render' => 'function(data, type, row){
+                        var statusContent = data ? data : "";
+                        
+                        if (statusContent) {
+                            // Set tooltip content: If sql_sync_respond is empty or null, display "No Message"
+                            var tooltipContent = row.sql_sync_respond ? row.sql_sync_respond : "No Message";
+                            return "<span class=\'tooltip-icon\' title=\'" + tooltipContent + "\'>" + statusContent + " <i class=\'fa fa-info-circle\' style=\'cursor: pointer;\'> </i></span>";
+                        } else {
+                            return "";  // No content if sql_sync_status is empty
+                        }
+                    }'
+                ],
+                [
+                'targets' => 13,
+                'visible' => false, // Keep sql_sync_respond hidden
+                ]
                 ],
                 'initComplete' => 'function(){
                     var columns = this.api().init().columns;
@@ -270,6 +288,16 @@ class InvoiceDataTable extends DataTable
                 'name' => 'customer.group',
                 'orderable' => false
             ]),
+
+            'sql_sync_status' => new \Yajra\DataTables\Html\Column([
+                'title' => trans('invoices.sql_sync_status'),
+                'data' => 'sql_sync_status',
+                'name' => 'invoices.sql_sync_status',
+                'orderable' => false,
+                'searchable' => false
+            ]),
+
+           
         ];
     }
 

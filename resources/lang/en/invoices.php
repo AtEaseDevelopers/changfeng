@@ -34,6 +34,8 @@ return [
     'kelindan' => 'Kelindan',
     'no_payment_proof_available' => 'No payment proof available',
     'payment_term' => 'Payment Term',
+    'sql_sync_status' => 'SQL Sync Status',
+    'sql_sync_respond' => 'SQL Sync Response',
     'price' => 'Price',
     'product' => 'Product',
     'proof_of_payment' => 'Proof of payment',

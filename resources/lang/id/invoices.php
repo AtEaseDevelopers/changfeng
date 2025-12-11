@@ -31,6 +31,8 @@ return [
     'invoices' => '发票',
     'kelindan' => 'Kelindan',
     'payment_term' => '付款条款',
+    'sql_sync_status' => 'SQL Sync Status',
+    'sql_sync_respond' => 'SQL Sync Response',
     'price' => '价格',
     'product' => '产品',
     'quantity' => '数量',

@@ -51,7 +51,7 @@ class SqlSyncRecordController extends Controller
         ];
 
         if ($isSuccess) {
-            $update['status'] = 'completed';
+            //$update['status'] = 'completed';
             $update['sql_sync_status'] = 'SUCCESS';
             $update['invoiceno']  = $data['target_name'] ?? null;
         }

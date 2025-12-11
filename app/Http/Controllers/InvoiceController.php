@@ -876,12 +876,12 @@ class InvoiceController extends AppBaseController
 
             $errors = [];
 
-           if ($invoice['status'] !== 'processing') {
-                $errors[] = "Status is '{$invoice['status']}'";
+            if ($invoice['status'] != '1') {
+                $errors[] = "Status is Not Completed";
             }
 
             if (empty($invoice['do_no'])) {
-                $errors[] = "DO number is empty";
+                $errors[] = "Invoice Number is empty";
             }
 
             if ($invoice['sql_sync_status'] === 'success') {
@@ -905,7 +905,7 @@ class InvoiceController extends AppBaseController
                     SqlSyncRecord::queue([
                         'target_id'   => $invoice['id'],
                         'action'      => 'invoice',
-                        'target_name' => $invoice['invoiceno'],
+                        'target_name' => $invoice['do_no'],
                         'details'     => $invoice,
                     ]);
                     DB::table('invoices')->where('id', $invoice['id'])->update([
@@ -921,7 +921,7 @@ class InvoiceController extends AppBaseController
             }
         }
 
-        return redirect()->back()->with([
+        return response()->json([
             'success_count' => count($syncedInvoices),
             'fail_count' => count($invalidInvoices) + count($syncFailures),
             'synced_invoices' => $syncedInvoices,

@@ -12,10 +12,9 @@ class AddSqlSyncColumnsToInvoicesTable extends Migration
     public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('sql_sync_status')->nullable()->after('status')->index();
+            $table->string('sql_sync_status')->default('PENDING')->nullable()->after('status')->index();
             $table->text('sql_sync_respond')->nullable()->after('sql_sync_status');
         });
-        
     }
 
     /**
