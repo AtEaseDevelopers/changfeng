@@ -16,6 +16,18 @@
     <p>{{ number_format($product->price, 2) }}</p>
 </div>
 
+<!-- UOM Field -->
+<div class="form-group">
+    {!! Form::label('uom', __('products.uom')) !!}:
+    <p>{{ (!empty($product->uom)) ? $product->uom : '-' }}</p>
+</div>
+
+<!-- SKU Field -->
+<div class="form-group">
+    {!! Form::label('sku', __('products.sku')) !!}:
+    <p>{{ (!empty($product->sku)) ? $product->sku : '-' }}</p>
+</div>
+
 <!-- Type Field -->
 <div class="form-group">
     {!! Form::label('type', __('products.type')) !!}:

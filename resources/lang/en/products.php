@@ -22,6 +22,8 @@ return [
     'saved_successfully' => 'Saved successfully',
     'status' => 'Status',
     'type' => 'Type',
+    'uom' => 'UOM',
+    'sku' => 'SKU',
     'type_cocoa' => 'cocoa',
     'type_coffee' => 'coffee',
     'type_ice' => 'Gas',

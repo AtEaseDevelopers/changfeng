@@ -22,6 +22,8 @@ return [
     'saved_successfully' => '保存成功',
     'status' => '状态',
     'type' => '类型',
+    'uom' => 'UOM',
+    'sku' => 'SKU',
     'type_cocoa' => '可可',
     'type_coffee' => '咖啡',
     'type_ice' => '煤气',

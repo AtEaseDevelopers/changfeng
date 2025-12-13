@@ -111,7 +111,7 @@ class ProductDataTable extends DataTable
                         'render' => 'function(data, type){return "<input type=\'checkbox\' class=\'checkboxselect\' checkboxid=\'"+data+"\'/>";}'
                     ],
                     [
-                    'targets' => 4,
+                    'targets' => 6,
                     'render' => 'function(data, type){
                             if (data == 1) {
                                 return "Coffee";
@@ -125,7 +125,7 @@ class ProductDataTable extends DataTable
                         }'
                     ],
                     [
-                    'targets' => 5,
+                    'targets' => 7,
                     'render' => 'function(data, type){return data == 1 ? "Active" : "Unactive";}'
                     ],
                 ],
@@ -174,6 +174,8 @@ class ProductDataTable extends DataTable
             'code',
             'name',
             'price',
+            'uom',
+            'sku',
             'type',
             'status'
         ];

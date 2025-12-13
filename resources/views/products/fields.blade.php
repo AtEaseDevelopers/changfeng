@@ -16,6 +16,18 @@
     {!! Form::number('price', null, ['class' => 'form-control', 'step' => '0.01']) !!}
 </div>
 
+<!-- UOM Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('uom', __('products.uom')) !!}<span class="asterisk"> *</span>
+    {!! Form::text('uom', null, ['class' => 'form-control', 'maxlength' => 255]) !!} <!-- Removed duplicate maxlength -->
+</div>
+
+<!-- SKU Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('sku', __('products.sku')) !!}<span class="asterisk"> *</span>
+    {!! Form::text('sku', null, ['class' => 'form-control', 'maxlength' => 500]) !!} <!-- Removed duplicate maxlength -->
+</div>
+
 <!-- Type Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('type', __('products.type')) !!}

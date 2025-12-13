@@ -37,7 +37,9 @@ class Product extends Model
         'name',
         'price',
         'status',
-        'type'
+        'type',
+        'uom',
+        'sku',
     ];
 
     /**
@@ -52,6 +54,8 @@ class Product extends Model
         'price' => 'float',
         'status' => 'integer',
         'type' => 'integer',
+        'uom' => 'string',
+        'sku' => 'string'
     ];
 
     /**
@@ -65,6 +69,8 @@ class Product extends Model
         'price' => 'required|numeric|numeric',
         'status' => 'required',
         'type' => 'required',
+        'uom'  => 'required',
+        'sku'  => 'nullable|nullable',
         'created_at' => 'nullable|nullable',
         'updated_at' => 'nullable|nullable'
     ];
