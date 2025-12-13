@@ -137,7 +137,6 @@ class Invoice extends Model
     {
         return DB::table('invoice_details')
             ->join('products', 'invoice_details.product_id', '=', 'products.id')
-            //->leftJoin('uoms', 'products.uom_id', '=', 'uoms.id')
             ->whereIn('invoice_details.invoice_id', $invoiceIds)
             ->select(
                 'invoice_details.invoice_id',
@@ -147,9 +146,9 @@ class Invoice extends Model
                 'invoice_details.totalprice as amount',
                 'invoice_details.remark',
                 'products.name as product_name',
-                //'products.sku as product_sku',
-                'products.code as product_code'
-                //'uoms.uom_name as uom_name'
+                'products.sku as product_sku',
+                'products.code as product_code',
+                'products.uom as uom_name'
             )
             ->get()
             ->groupBy('invoice_id');
