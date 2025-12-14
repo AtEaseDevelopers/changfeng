@@ -17,6 +17,7 @@ class AutoSyncCompletedInvoices extends Command
 
     public function handle()
     {
+        echo "Starting Getting Invoices ... ";
         $logData = [
             'action_by'     => 'System : ' . now()->timestamp,  
             'action_name'   => 'Sync Completed Invoices',
@@ -44,6 +45,8 @@ class AutoSyncCompletedInvoices extends Command
             LogAction::updateLogResponse($log->id, $logData['action_ref_no'], $logData['respond'], $logData['remark']);
 
             $this->info('Sync completed successfully.');
+            echo "End Getting Invoices ... ";
+
         } catch (\Exception $e) {
             LogAction::updateLogResponse($log->id, $logData['action_ref_no'], null, 'Error: ' . $e->getMessage());
             $this->error('Sync failed: ' . $e->getMessage());
@@ -52,7 +55,7 @@ class AutoSyncCompletedInvoices extends Command
 
     private function getCompletedInvoiceIds()
     {
-        $completedInvoices = Invoice::where('status', '1')->where('sync_sql_status', 'PENDING')->get();
+        $completedInvoices = Invoice::where('status', '1')->where('sql_sync_status', 'PENDING')->get();
         return $completedInvoices->pluck('id')->implode(',');
     }
 }
