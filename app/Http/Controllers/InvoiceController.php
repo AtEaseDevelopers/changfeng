@@ -191,7 +191,10 @@ class InvoiceController extends AppBaseController
         }
 
         $invoice = $this->invoiceRepository->update($input, $id);
-
+        
+        $invoice->sql_sync_status = 'PENDING';
+        $invoice->save();
+        
          if($old_payment != $input['paymentterm'])
         {
             $invoicePayment = InvoicePayment::where('invoice_id', $id)->first();
