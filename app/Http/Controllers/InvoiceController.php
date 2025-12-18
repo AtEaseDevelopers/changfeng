@@ -887,14 +887,14 @@ class InvoiceController extends AppBaseController
                 $errors[] = "Invoice Number is empty";
             }
 
-            if ($invoice['sql_sync_status'] === 'success') {
+            if ($invoice['sql_sync_status'] === 'SUCCESS') {
                 $errors[] = "Already synced";
             }
 
             if (!empty($errors)) {
-                $invalidInvoices[$id] = implode(', ', $errors);
+                $invalidInvoices[$invoice['do_no']] = implode(', ', $errors);
             } else {
-                $validInvoices[$id] = $invoice;
+                $validInvoices[$invoice['do_no']] = $invoice;
             }
         }
 

@@ -126,40 +126,49 @@
                             url: "{{ route('invoices.syncsqlrecord') }}",  // Adjust the URL to your route
                             type: "POST",
                             data: data,
-                            success: function(response) {
+                           success: function (response) {
                                 toastr.success('Sync started successfully!', 'Success');
 
-                                var message = 'Sync Summary:<br>';
+                                let message = '<div style="line-height:1.6">';
+                                message += '<b>Sync Summary:</b><br>';
                                 message += 'Success: ' + response.success_count + ' invoices<br>';
                                 message += 'Failed: ' + response.fail_count + ' invoices<br>';
                                 message += 'System will sync in background, please check the sync status later.<br><br>';
 
                                 if (response.synced_invoices.length > 0) {
-                                    message += 'Synced Invoices: <br>' + response.synced_invoices.join('<br>') + '<br>';
+                                    message += '<b>Synced Invoices:</b><br>' +
+                                        response.synced_invoices.join('<br>') + '<br><br>';
                                 }
 
-                                if (response.invalid_invoices.length > 0) {
-                                    message += 'Invalid Invoices: <br>' + Object.entries(response.invalid_invoices).map(function([id, error]) {
-                                        return 'Invoice ID ' + id + ': ' + error;
-                                    }).join('<br>') + '<br>';
+                                if (Object.keys(response.invalid_invoices).length > 0) {
+                                    message += '<b>Invalid Invoices:</b><br>' +
+                                        Object.entries(response.invalid_invoices)
+                                            .map(([id, error]) => 'Invoice ' + id + ': ' + error)
+                                            .join('<br>') + '<br><br>';
                                 }
 
-                                if (response.sync_failures.length > 0) {
-                                    message += 'Sync Failures: <br>' + Object.entries(response.sync_failures).map(function([id, error]) {
-                                        return 'Invoice ID ' + id + ': ' + error;
-                                    }).join('<br>') + '<br>';
+                                if (Object.keys(response.sync_failures).length > 0) {
+                                    message += '<b>Sync Failures:</b><br>' +
+                                        Object.entries(response.sync_failures)
+                                            .map(([id, error]) => 'Invoice ' + id + ': ' + error)
+                                            .join('<br>') + '<br><br>';
                                 }
 
                                 if (response.not_found.length > 0) {
-                                    message += 'Not Found Invoices: <br>' + response.not_found.join('<br>') + '<br>';
+                                    message += '<b>Not Found Invoices:</b><br>' +
+                                        response.not_found.join('<br>') + '<br><br>';
                                 }
+
+                                message += '</div>';
 
                                 $.confirm({
                                     title: 'Sync Results',
                                     content: message,
+                                    type: 'blue',
+                                    useBootstrap: false,   // ✅ important
                                     buttons: {
-                                        Ok: function() {
-                                            location.reload(); // This will reload the entire page
+                                        Ok: function () {
+                                            location.reload();
                                         }
                                     }
                                 });
