@@ -172,6 +172,11 @@ Route::get('/clear-cache', function() {
     return 'Application cache has been cleared';
 });
 
+Route::get('/getQueueSqlSyncInvoices', function() {
+    Artisan::call('sync:completed-invoices');
+    return 'Success';
+});
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 // Route::get('/archived', [App\Http\Controllers\ArcHomeController::class, 'index'])->name('home');
